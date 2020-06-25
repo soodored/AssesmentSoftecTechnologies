@@ -19,27 +19,26 @@ public class WebCrawler {
     private final List<String> WORDS;
     private final int MAX_DEPTH;
 
-    private static HashSet<String> links = new HashSet<String>();
-    private static LinkedHashMap<String, Map<String, Integer>> result = new LinkedHashMap<>();
-    private static int innerCount = 0;
+    private HashSet<String> links = new HashSet<String>();
+    private LinkedHashMap<String, Map<String, Integer>> result = new LinkedHashMap<>();
+    private int innerCount = 0;
 
     WebCrawler(List<String> words, int maxDepth){
         this.WORDS = words;
         this.MAX_DEPTH = maxDepth;
     }
 
-    public LinkedHashMap<String, Map<String, Integer>> getResult(String url) {
-        getPageLink(url);
-
+    public LinkedHashMap<String, Map<String, Integer>> crawl(String url) {
+        processPage(url);
         return result;
     }
 
-    private void getPageLink(String url) {
+    private void processPage(String url) {
         if (!links.contains(url) && innerCount != MAX_DEPTH) {
             innerCount++;
             links.add(url);
 
-            Document document = connection(url);
+            Document document = getPageByUrl(url);
 
             result.put(url, searchOnPageAllWords(document));
 
@@ -47,19 +46,30 @@ public class WebCrawler {
         }
     }
 
+    private Document getPageByUrl(String url){
+
+        Document document = null;
+        try {
+            document = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return document;
+    }
+
     private Map<String, Integer> searchOnPageAllWords(Document document){
         Map<String, Integer> map = new LinkedHashMap<>();
         for (String word : WORDS) {
-            int count = searchOnPageByWord(document.toString(), " " + word.trim() + " ");
+            int count = searchOnPageByWord(document.toString(), word.trim());
             map.put(word, count);
         }
         return map;
     }
 
-    private static int searchOnPageByWord(String page, String word) {
+    private int searchOnPageByWord(String page, String word) {
         int count = 0;
 
-        Pattern pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("[ >,]" + word + "[ <,]", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(page);
 
         while (matcher.find()) {
@@ -73,18 +83,7 @@ public class WebCrawler {
         Elements elements = document.select("a[href]");
 
         for (Element elem : elements) {
-            getPageLink(elem.attr("abs:href"));
+            processPage(elem.attr("abs:href"));
         }
-    }
-
-    private static Document connection(String url){
-
-        Document document = null;
-        try {
-            document = Jsoup.connect(url).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return document;
     }
 }
