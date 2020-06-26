@@ -19,11 +19,11 @@ public class WebCrawler {
     private final List<String> WORDS;
     private final int MAX_DEPTH;
 
-    private HashSet<String> links = new HashSet<String>();
-    private LinkedHashMap<String, Map<String, Integer>> result = new LinkedHashMap<>();
+    private final HashSet<String> links = new HashSet<>();
+    private final LinkedHashMap<String, Map<String, Integer>> result = new LinkedHashMap<>();
     private int innerCount = 0;
 
-    WebCrawler(List<String> words, int maxDepth){
+    public WebCrawler(List<String> words, int maxDepth){
         this.WORDS = words;
         this.MAX_DEPTH = maxDepth;
     }
