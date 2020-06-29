@@ -16,7 +16,7 @@ public class Main {
         System.out.println("Enter max depth from 1 to 10");
         int maxDepth = readMaxDepth(scanner);
 
-        WebCrawler webCrawler = new WebCrawler(words, maxDepth);
+        WebCrawler webCrawler = new WebCrawler(words, maxDepth, new PageConnection());
 
         LinkedHashMap<String, Map<String, Integer>> map = webCrawler.crawl(url);
 

@@ -1,11 +1,9 @@
 package org.example;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,14 +16,16 @@ public class WebCrawler {
 
     private final List<String> WORDS;
     private final int MAX_DEPTH;
+    public final PageConnection pageConnection;
 
     private final HashSet<String> links = new HashSet<>();
     private final LinkedHashMap<String, Map<String, Integer>> result = new LinkedHashMap<>();
     private int innerCount = 0;
 
-    public WebCrawler(List<String> words, int maxDepth){
+    public WebCrawler(List<String> words, int maxDepth, PageConnection pageConnection){
         this.WORDS = words;
         this.MAX_DEPTH = maxDepth;
+        this.pageConnection = pageConnection;
     }
 
     public LinkedHashMap<String, Map<String, Integer>> crawl(String url) {
@@ -37,8 +37,7 @@ public class WebCrawler {
         if (!links.contains(url) && innerCount != MAX_DEPTH) {
             innerCount++;
             links.add(url);
-
-            Document document = getPageByUrl(url);
+            Document document = pageConnection.getPageByUrl(url);
 
             result.put(url, searchOnPageAllWords(document));
 
@@ -46,27 +45,16 @@ public class WebCrawler {
         }
     }
 
-    private Document getPageByUrl(String url){
-
-        Document document = null;
-        try {
-            document = Jsoup.connect(url).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return document;
-    }
-
     private Map<String, Integer> searchOnPageAllWords(Document document){
         Map<String, Integer> map = new LinkedHashMap<>();
         for (String word : WORDS) {
-            int count = searchOnPageByWord(document.toString(), word.trim());
+            int count = searchWordOnPageByName(document.toString(), word.trim());
             map.put(word, count);
         }
         return map;
     }
 
-    private int searchOnPageByWord(String page, String word) {
+    private int searchWordOnPageByName(String page, String word) {
         int count = 0;
 
         Pattern pattern = Pattern.compile("[ >,]" + word + "[ <,]", Pattern.CASE_INSENSITIVE);
