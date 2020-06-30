@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.stream.Collectors;
 
 public class PageConnection {
-    public Document getPageByUrl(String url) {
+    public static Document getPageByUrl(String url) {
 
         Document document = null;
         try {
@@ -24,7 +24,7 @@ public class PageConnection {
                 document = Jsoup.connect(url).get();
             }
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Invalid URL");
         }
         return document;
     }

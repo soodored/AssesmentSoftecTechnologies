@@ -16,16 +16,16 @@ public class Main {
         System.out.println("Enter max depth from 1 to 10");
         int maxDepth = readMaxDepth(scanner);
 
-        WebCrawler webCrawler = new WebCrawler(words, maxDepth, new PageConnection());
+        WebCrawler webCrawler = new WebCrawler(words, maxDepth);
 
         LinkedHashMap<String, Map<String, Integer>> map = webCrawler.crawl(url);
 
-         CSVFile.createCSVFile(map);
+        CSVFile.createCSVFile(map);
     }
 
     private static int readMaxDepth(Scanner scanner) {
         int maxDepth = scanner.nextInt();
-        if (maxDepth < 1 || maxDepth > 10){
+        if (maxDepth < 1 || maxDepth > 10) {
             System.out.println("You entered the wrong depth");
             maxDepth = readMaxDepth(scanner);
         }

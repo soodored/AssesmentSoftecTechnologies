@@ -16,16 +16,14 @@ public class WebCrawler {
 
     private final List<String> WORDS;
     private final int MAX_DEPTH;
-    public final PageConnection pageConnection;
 
     private final HashSet<String> links = new HashSet<>();
     private final LinkedHashMap<String, Map<String, Integer>> result = new LinkedHashMap<>();
     private int innerCount = 0;
 
-    public WebCrawler(List<String> words, int maxDepth, PageConnection pageConnection){
+    public WebCrawler(List<String> words, int maxDepth) {
         this.WORDS = words;
         this.MAX_DEPTH = maxDepth;
-        this.pageConnection = pageConnection;
     }
 
     public LinkedHashMap<String, Map<String, Integer>> crawl(String url) {
@@ -37,7 +35,7 @@ public class WebCrawler {
         if (!links.contains(url) && innerCount != MAX_DEPTH) {
             innerCount++;
             links.add(url);
-            Document document = pageConnection.getPageByUrl(url);
+            Document document = PageConnection.getPageByUrl(url);
 
             result.put(url, searchOnPageAllWords(document));
 
@@ -45,7 +43,7 @@ public class WebCrawler {
         }
     }
 
-    private Map<String, Integer> searchOnPageAllWords(Document document){
+    private Map<String, Integer> searchOnPageAllWords(Document document) {
         Map<String, Integer> map = new LinkedHashMap<>();
         for (String word : WORDS) {
             int count = searchWordOnPageByName(document.toString(), word.trim());
@@ -63,11 +61,10 @@ public class WebCrawler {
         while (matcher.find()) {
             count++;
         }
-
         return count;
     }
 
-    private void searchOnInnerPage(Document document){
+    private void searchOnInnerPage(Document document) {
         Elements elements = document.select("a[href]");
 
         for (Element elem : elements) {
