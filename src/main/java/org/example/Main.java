@@ -7,13 +7,13 @@ import java.util.stream.Stream;
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter website: ");
+        System.out.print("Enter website: ");
         String url = scanner.nextLine();
         System.out.print("Enter comma separated words: ");
         String line = scanner.nextLine();
         List<String> words = Stream.of(line.split(",")).collect(Collectors.toList());
 
-        System.out.println("Enter max depth from 1 to 10");
+        System.out.print("Enter max depth from 1 to 10: ");
         int maxDepth = readMaxDepth(scanner);
 
         WebCrawler webCrawler = new WebCrawler(words, maxDepth);
